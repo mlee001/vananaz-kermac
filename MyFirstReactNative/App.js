@@ -10,8 +10,7 @@ import {
   ScrollView, 
   KeyboardAvoidingView,
   TouchableOpacity,
-  Alert,
-  Platfrom} from 'react-native';
+  Alert} from 'react-native';
   import CustomButton from './Components/button'
   import HideMe from './Components/hideMe';
 
