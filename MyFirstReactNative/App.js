@@ -9,7 +9,10 @@ import {
   TextInput, 
   ScrollView, 
   KeyboardAvoidingView,
+  TouchableOpacity,
   Alert  } from 'react-native';
+  import CustomButton from './Components/button'
+  import HideMe from './Components/hideMe';
 
 export default class Vananaz extends Component {
 
@@ -18,12 +21,33 @@ export default class Vananaz extends Component {
     this.state={
       username:"",
       password: "",
+      passwordLength: 0,
+      isHidden: false,
+      isError: false,
     }
   }
 
-  _onPressButton() {
-    console.log('this.props.username');
+
+
+  _onPressButton = () => {
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ ;
+    console.log(this.state.isError)
+    console.log(this.state.username);
+      if(reg.test(this.state.username) === false)
+      {
+        console.log("Email is Not Correct");
+        this.setState({isError: true})
+      }
+      else 
+      {
+        console.log("Email is Correct");
+        this.setState({isError: false})
+      }
+
+    
+    
   }
+  
 
   render() {
     return (
@@ -46,11 +70,10 @@ export default class Vananaz extends Component {
             placeholder ='Input email address'
 
             onChangeText={
-              (text) => {
-                this.setState({username: text});
-              }
+              username => this.setState({username})
             }
-            value={this.state.username}
+          
+            
           
           />
           <Text style={styles.error}>not correct format for email address</Text>
@@ -70,16 +93,13 @@ export default class Vananaz extends Component {
           
           />
           <Text style={styles.error}>please use at least 6-12 characters</Text>
-  
-          
         </View>
 
         <View style={styles.buttonContainer}>
-          <Button style={styles.button}
-            onPress={this._onPressButton} 
-            title= "Sign In"
-            color= '#714DB2'
-          />
+          <CustomButton 
+                  text="Sign In"
+                  onPress={this._onPressButton}
+                  />
         </View>
         </KeyboardAvoidingView>
         </ScrollView>
@@ -127,11 +147,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     padding: 5,
     borderRadius: 10,
-  },
-
-  button: {
-    width: 300,
-    
   },
 
 });
