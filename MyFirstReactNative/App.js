@@ -21,26 +21,26 @@ export default class Vananaz extends Component {
     super(props);
 
     this.state={
-      username:"",
-      password: "",
+      username:'',
+      password: '',
       passwordLength: 0,
       passwordError: 'valid',
       isHidden: false,
-      isEmailError: false,
-      isPassError: false,
+      isEmailError: true,
+      isPassError: true,
       ButtonStateHolder : false, //button is now enabled
     }
   }
 
   _disableButton =()=>{
       this.setState({
-        ButtonStateHolder : true ,
+        ButtonStateHolder : true,
       })
   }
 
   _enableButton =()=>{
       this.setState({
-        ButtonStateHolder : true ,
+        ButtonStateHolder : false,
       })
   }
 
@@ -53,44 +53,49 @@ export default class Vananaz extends Component {
 
 //Validates the password entered. 6-12 characters only.
   _validatePassword = () => {
+    console.log(this.state.password);
     var Value = this.state.passwordLength;
-    if (Value>=6 && Value<=12)
+    if (Value>5 && Value<13)
     {
-      this.setState({isPassError: false})
-      console.log('Password is valid')
+      this.setState({isPassError: true})
+      //console.log('Password is valid')
       this._enableButton();
     }
     else
     { 
-      this.setState({isPassError: true})
-      console.log('Password is invalid')
-      this._disableButton();
+      this.setState({isPassError: false})
+      //console.log('Password is invalid')
+      //this._disableButton();
     }
   }
 
+
+
 //Validates the email address entered.
   _validateEmail = () => {
+    
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ ;
-      if(reg.test(this.state.username) === false)
+      if(reg.test(this.state.username)==false)
       {
-        console.log("Email is Not Correct");
-        this.setState({isEmailError: true})
-        this._disableButton();
+        //console.log("Email is Not Correct");
+        this.setState({isEmailError: false})
+        //this._disableButton();
       }
       else 
       {
-        console.log("Email is Correct");
-        this.setState({isEmailError: false})
+        //console.log("Email is Correct");
+        this.setState({isEmailError: true})
         this._enableButton();
       }  
   }
 
   _onPressButton = () => {
-    //Alert.alert('Button Clicked') ;
+    
     this._validateEmail();
     this._validatePassword();
-      console.log('Email: ' + this.state.username);
-      console.log('Password Lenght: ' + this.state.passwordLength);
+      //console.log('Email: ' + this.state.username);
+      //console.log('Password Lenght: ' + this.state.passwordLength);
+    Alert.alert(this.state.username);
   }
   
   render() {
@@ -117,14 +122,17 @@ export default class Vananaz extends Component {
               onChangeText={
                 (text) => {
                   this.setState({username: text}),
+                  console.log(this.state.username),
                   this._validateEmail()
                 }
               }
+
             />
 
-            <Text style={[styles.error, {color: this.state.isEmailError ? 'red' : 'white' }]}> not correct format for email address</Text>
+            <Text style={[styles.error, {color: this.state.isEmailError ? 'white' : 'red' }]}> not correct format for email address</Text>
 
             <Text style={styles.label}>Password</Text>
+
             <TextInput
               underlineColorAndroid='transparent'
               secureTextEntry={true} 
@@ -133,11 +141,12 @@ export default class Vananaz extends Component {
               onChangeText={
                   (text) => {
                     this.setState({password: text}),
-                    this._getPasswordLength(text)
+                    this._getPasswordLength(text),
+                    this._validatePassword()
                 }
               }
             />
-            <Text style={[styles.error, {color: this.state.isPassError ? 'red' : 'white' }]}>please use at least 6-12 characters</Text>
+            <Text style={[styles.error, {color: this.state.isPassError ? 'white' : 'red' }]}>please use at least 6-12 characters</Text>
           </View>
         </TouchableWithoutFeedback>
 
