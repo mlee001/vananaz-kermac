@@ -9,9 +9,10 @@ import {
   TextInput, 
   ScrollView, 
   KeyboardAvoidingView,
+  TouchableWithoutFeedback,
   TouchableOpacity,
   Alert} from 'react-native';
-  import CustomButton from './Components/button'
+  //import CustomButton from './Components/button'
   import HideMe from './Components/hideMe';
 
 export default class Vananaz extends Component {
@@ -25,48 +26,67 @@ export default class Vananaz extends Component {
       passwordLength: 0,
       passwordError: 'valid',
       isHidden: false,
-      isError: false,
+      isEmailError: false,
+      isPassError: false,
+      ButtonStateHolder : false, //button is now enabled
     }
   }
 
-//Comment
-/*Gets the length of the password*/
+  _disableButton =()=>{
+      this.setState({
+        ButtonStateHolder : true ,
+      })
+  }
+
+  _enableButton =()=>{
+      this.setState({
+        ButtonStateHolder : true ,
+      })
+  }
+
+
+//Gets the length of the password
   _getPasswordLength = (ValueHolder) => {
     var Value=ValueHolder.length.toString();
     this.setState({passwordLength: Value})
   }
 
-/*Validates the password entered. 6-12 characters only.*/
+//Validates the password entered. 6-12 characters only.
   _validatePassword = () => {
     var Value = this.state.passwordLength;
     if (Value>=6 && Value<=12)
     {
-      this.setState({passwordError: 'Valid'})
+      this.setState({isPassError: false})
       console.log('Password is valid')
+      this._enableButton();
     }
     else
     { 
-      this.setState({passwordError: 'Invalid'})
+      this.setState({isPassError: true})
       console.log('Password is invalid')
+      this._disableButton();
     }
   }
 
-/*Validates the email address entered.*/
+//Validates the email address entered.
   _validateEmail = () => {
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ ;
       if(reg.test(this.state.username) === false)
       {
         console.log("Email is Not Correct");
-        this.setState({isError: true})
+        this.setState({isEmailError: true})
+        this._disableButton();
       }
       else 
       {
         console.log("Email is Correct");
-        this.setState({isError: false})
+        this.setState({isEmailError: false})
+        this._enableButton();
       }  
   }
 
   _onPressButton = () => {
+    //Alert.alert('Button Clicked') ;
     this._validateEmail();
     this._validatePassword();
       console.log('Email: ' + this.state.username);
@@ -75,60 +95,65 @@ export default class Vananaz extends Component {
   
   render() {
     return (
-        
-        <ScrollView>
         <KeyboardAvoidingView behavior='position' style = {{backgroundColor: 'white', flex: 1}}>
-        <View style={{flex: 1, height:100, backgroundColor: 'white'}}>
+        <ScrollView>
+        
+        <View style={{flex: 2, height:100, backgroundColor: 'white'}}>
         </View>
 
         <View style={styles.logoContainer}>
           <Image source={require('./images/logo.png')} />
         </View>
 
+        <TouchableWithoutFeedback>
+          <View style={styles.inputContainer}>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            underlineColorAndroid='transparent'
-            style={styles.input}
-            placeholder ='Input email address'
-            onChangeText={
-              (text) => {
-                this.setState({username: text})
-              }
-            }
-          />
-
-          <Text style={styles.error}>not correct format for email address</Text>
-
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            underlineColorAndroid='transparent'
-            secureTextEntry={true} 
-            style={styles.input}
-            placeholder ='Input password'
-            onChangeText={
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              keyboardType='email-address'
+              underlineColorAndroid='transparent'
+              style={styles.input}
+              placeholder ='Input email address'
+              onChangeText={
                 (text) => {
-                  this.setState({password: text}),
-                  this._getPasswordLength(text)
+                  this.setState({username: text}),
+                  this._validateEmail()
+                }
               }
-            }
-          />
+            />
 
-          <Text style={styles.error}>please use at least 6-12 characters</Text>
+            <Text style={[styles.error, {color: this.state.isEmailError ? 'red' : 'white' }]}> not correct format for email address</Text>
 
-        </View>
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              underlineColorAndroid='transparent'
+              secureTextEntry={true} 
+              style={styles.input}
+              placeholder ='Input password'
+              onChangeText={
+                  (text) => {
+                    this.setState({password: text}),
+                    this._getPasswordLength(text)
+                }
+              }
+            />
+            <Text style={[styles.error, {color: this.state.isPassError ? 'red' : 'white' }]}>please use at least 6-12 characters</Text>
+          </View>
+        </TouchableWithoutFeedback>
 
         <View style={styles.buttonContainer}>
-          <CustomButton 
-                  text="Sign In"
-                  onPress={
-                    this._onPressButton}
-
-                  />
+          <TouchableOpacity 
+            activeOpacity = { .5 } 
+            style={[styles.buttonStyle, {backgroundColor: this.state.ButtonStateHolder ? '#607D8B' : '#714DB2' }]}
+            disabled={this.state.ButtonStateHolder}
+            onPress={this._onPressButton}>
+              <Text style={styles.textStyle}>Sign In</Text>
+          </TouchableOpacity>
+        
         </View>
-        </KeyboardAvoidingView>
+
         </ScrollView>
+        </KeyboardAvoidingView>
         
     );
   }
@@ -174,5 +199,16 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 10,
   },
+
+  textStyle: {
+    fontSize:20,
+    color: '#ffffff',
+    textAlign: 'center'
+  },
+  
+  buttonStyle: {
+    padding:10,
+    borderRadius:5
+  }
 
 });
