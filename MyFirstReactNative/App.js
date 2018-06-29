@@ -29,6 +29,7 @@ export default class Vananaz extends Component {
     }
   }
 
+//Comment
 /*Gets the length of the password*/
   _getPasswordLength = (ValueHolder) => {
     var Value=ValueHolder.length.toString();
