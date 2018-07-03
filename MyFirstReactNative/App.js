@@ -23,8 +23,6 @@ export default class Vananaz extends Component {
       username:'',
       password:'',
       passwordLength: 0,
-      passwordError: 'valid',
-      isHidden: false,
       isEmailError: true,
       isPassError: true,
       ButtonStateHolder : false, //button is now enabled
