@@ -12,8 +12,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   Alert} from 'react-native';
-  //import CustomButton from './Components/button'
-  import HideMe from './Components/hideMe';
+
 
 export default class Vananaz extends Component {
 
@@ -22,7 +21,7 @@ export default class Vananaz extends Component {
 
     this.state={
       username:'',
-      password: '',
+      password:'',
       passwordLength: 0,
       passwordError: 'valid',
       isHidden: false,
@@ -44,60 +43,67 @@ export default class Vananaz extends Component {
       })
   }
 
-
 //Gets the length of the password
   _getPasswordLength = (ValueHolder) => {
-    var Value=ValueHolder.length.toString();
+    Value=ValueHolder.length.toString();
     this.setState({passwordLength: Value})
   }
 
-//Validates the password entered. 6-12 characters only.
-  _validatePassword = () => {
-    console.log(this.state.password);
-    var Value = this.state.passwordLength;
-    if (Value>5 && Value<13)
+//Validates both email and password. Disables button if input is invalid. 
+  validate (text, type) 
+  {
+    alph = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    if (type=='username')
     {
-      this.setState({isPassError: true})
-      //console.log('Password is valid')
-      this._enableButton();
-    }
-    else
-    { 
-      this.setState({isPassError: false})
-      //console.log('Password is invalid')
-      //this._disableButton();
-    }
-  }
-
-
-
-//Validates the email address entered.
-  _validateEmail = () => {
-    
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ ;
-      if(reg.test(this.state.username)==false)
+      if(alph.test(text))
       {
-        //console.log("Email is Not Correct");
-        this.setState({isEmailError: false})
-        //this._disableButton();
-      }
-      else 
-      {
-        //console.log("Email is Correct");
         this.setState({isEmailError: true})
-        this._enableButton();
-      }  
+        if (!this.state.isPassError)
+        {
+          this._disableButton()
+        }
+        else
+        {
+          this._enableButton()
+        }
+      }
+      else
+      {
+        this.setState({isEmailError: false})
+        this._disableButton()
+      }
+    }
+    else if (type=='password')
+    {
+      
+      if(Value>=6 && Value <=12)
+      {
+        console.log('pass is correct')
+        this.setState({isPassError: true})
+        if (!this.state.isEmailError)
+        {
+          this._disableButton()
+        }
+        else
+        {
+          this._enableButton()
+        }
+        
+      }
+      else
+      {
+        console.log('pass is incorrect')
+        this.setState({isPassError: false})
+        this._disableButton()
+      }
+    }
   }
 
+//Button action function. 
   _onPressButton = () => {
-    
-    this._validateEmail();
-    this._validatePassword();
-      //console.log('Email: ' + this.state.username);
-      //console.log('Password Lenght: ' + this.state.passwordLength);
-    Alert.alert(this.state.username);
+    Alert.alert('You are now logged in as: ' + this.state.username);
   }
-  
+
   render() {
     return (
         <KeyboardAvoidingView behavior='position' style = {{backgroundColor: 'white', flex: 1}}>
@@ -117,16 +123,16 @@ export default class Vananaz extends Component {
             <TextInput
               keyboardType='email-address'
               underlineColorAndroid='transparent'
+              returnKeyType = "next"
               style={styles.input}
               placeholder ='Input email address'
+              onSubmitEditing={()=> this.passwordInput.focus()}
               onChangeText={
                 (text) => {
-                  this.setState({username: text}),
-                  console.log(this.state.username),
-                  this._validateEmail()
+                  this.validate(text, 'username'),
+                  this.setState({username: text})
                 }
               }
-
             />
 
             <Text style={[styles.error, {color: this.state.isEmailError ? 'white' : 'red' }]}> not correct format for email address</Text>
@@ -135,15 +141,17 @@ export default class Vananaz extends Component {
 
             <TextInput
               underlineColorAndroid='transparent'
+              returnKeyType = 'go'
               secureTextEntry={true} 
               style={styles.input}
+              ref={(input) => this.passwordInput = input}
               placeholder ='Input password'
               onChangeText={
                   (text) => {
-                    this.setState({password: text}),
                     this._getPasswordLength(text),
-                    this._validatePassword()
-                }
+                    this.setState({password: text}),
+                    this.validate(text, 'password')
+                  }
               }
             />
             <Text style={[styles.error, {color: this.state.isPassError ? 'white' : 'red' }]}>please use at least 6-12 characters</Text>
